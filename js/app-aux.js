@@ -15,3 +15,16 @@ Array.prototype.first = function() {
 Array.prototype.last = function() {
   return this[this.length - 1]
 }
+
+Array.prototype.swap = function(a, b) {
+  const t = this[a]
+  this[a] = this[b]
+  this[b] = t
+}
+
+Array.prototype.shuffle = function() {
+  for (let i = this.length - 1; i > 0; i--) {
+    this.swap(i, Math.floor(Math.random() * (i + 1)))
+  }
+  return this
+}

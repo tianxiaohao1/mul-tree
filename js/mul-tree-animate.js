@@ -1,4 +1,4 @@
-class MulTree {
+class MulTreeAnimate {
   constructor(d = {}) {
     const me = this
     me.d = d
@@ -31,6 +31,10 @@ class MulTree {
     d.root = d.data[0]
 
     d.data.forEach((v) => {
+      v.from = {x: 0, y: 0}
+      v.to = {x: 0, y: 0}
+      v.x = 0
+      v.y = 0
       v.width = Math.ceil(gd.measureText(v.id).width + 15)
       d.mapId[v.id] = v
       d.mapPid[v.pid] = d.mapPid[v.pid] || []
@@ -60,13 +64,13 @@ class MulTree {
         setDepth(v, depth + 1)
       })
     }
-    setDepth(d.root)
+    d.root && setDepth(d.root)
   }
-  getPrev(node) {
-    return this.d.stair[node?.depth]?.[node?.hIndex - 1]
+  getPrev(v) {
+    return this.d.stair[v?.depth]?.[v?.hIndex - 1]
   }
-  getNext(node) {
-    return this.d.stair[node?.depth]?.[node?.hIndex + 1]
+  getNext(v) {
+    return this.d.stair[v?.depth]?.[v?.hIndex + 1]
   }
   getChildren(node) {
     const result = []
@@ -88,8 +92,8 @@ class MulTree {
       if (!tmp || set.has(tmp)) return
       dis = (
         isL ?
-          Math.min(dis, v.x - (tmp.x + tmp.width)) :
-          Math.min(dis, tmp.x - (v.x + v.width))
+          Math.min(dis, v.to.x - tmp.to.x - tmp.width) :
+          Math.min(dis, tmp.to.x - v.to.x - v.width)
       )
     })
 
@@ -97,13 +101,54 @@ class MulTree {
   }
   translate(node, x = 0, y = 0) {
     this.getChildren(node).forEach((v) => {
-      v.x += x
-      v.y += y
+      v.to.x += x
+      v.to.y += y
     })
   }
-  setLayout() {
+  async animate(duration = 300) {
     const me = this
     const d = me.d
+    const fn = Tween['Cubic']['easeInOut']
+    const timeStart = Date.now()
+
+    return new Promise((next) => {
+      const loopRender = () => {
+        me.timerAni = requestAnimationFrame(() => {
+          const timeDis = Date.now() - timeStart
+          const scale = fn(timeDis, 0, 1, duration)
+          const isStop = timeDis >= duration
+
+          d.data.forEach((v) => {
+            if (isStop) {
+              v.x = v.from.x = v.to.x
+              v.y = v.from.y = v.to.y
+            } else {
+              v.x = (v.to.x - v.from.x) * scale + v.from.x
+              v.y = (v.to.y - v.from.y) * scale + v.from.y
+            }
+          })
+
+          me.render()
+          isStop ? next() : loopRender()
+        })
+      }
+      cancelAnimationFrame(me.timerAni)
+      loopRender()
+    })
+  }
+  async setLayout() {
+    const me = this
+    const d = me.d
+
+    d.stair.forEach((row) => {
+      row.forEach((v) => {
+        const nodeL = me.getPrev(v)
+        v.to.x = nodeL ? nodeL.to.x + nodeL.width : 0
+        v.to.y = v.depth * d.conf.lineHeight
+      })
+    })
+
+    await me.animate(500)
 
     for (let depth = d.stair.length - 1; depth > -1; depth--) {
       const row = d.stair[depth]
@@ -111,27 +156,54 @@ class MulTree {
       for (let i = 0; i < row.length; i++) {
         const node = row[i]
         const nodeL = me.getPrev(node)
+        const nodeR = me.getNext(node)
         const children = d.mapPid[node.id]
+        const oldX = node.to.x
 
-        node.y = node.depth * d.conf.lineHeight
+        node.to.y = node.depth * d.conf.lineHeight
 
         if (!children) {
-          node.x = nodeL ? nodeL.x + nodeL.width : 0
+          node.to.x = nodeL ? nodeL.to.x + nodeL.width : 0
+          node.fillStyle = 'rgba(255,0,0,.5)'
+          await me.animate(depth === d.stair.length - 1 ? 50 : 300)
           continue
         }
 
         for (let j = children.length - 2; j > -1; j--) {
           const tmp = children[j]
           const dis = me.getDis(tmp, 'r')
-          dis !== 0 && me.translate(tmp, dis)
+
+          if (dis !== 0) {
+            me.translate(tmp, dis)
+            await me.animate()
+          }
         }
 
         const l = children[0]
         const r = children[children.length - 1]
 
-        node.x = (l.x + r.x + r.width) / 2 - node.width / 2
+        node.fillStyle = 'rgba(0,200,0,.5)'
+        node.to.x = (l.to.x + r.to.x + r.width) / 2 - node.width / 2
+
         const dis = me.getDis(node)
-        dis !== 0 && me.translate(node, -dis)
+        const distance = nodeR ? nodeR.to.x - node.to.x - node.width : 0
+
+        if (dis !== 0) {
+          await me.animate(500)
+          me.translate(node, -dis)
+
+          for (let j = node.hIndex + 1; j < row.length; j++) {
+            me.translate(row[j], -dis)
+          }
+          await me.animate()
+        } else if (distance) {
+          for (let j = node.hIndex + 1; j < row.length; j++) {
+            row[j].to.x += -distance
+          }
+          await me.animate(500)
+        } else {
+          await me.animate()
+        }
 
         let leafs = []
 
@@ -148,14 +220,17 @@ class MulTree {
               l && l.pid === node.id &&
               r && r.pid === node.id
             ) {
-              const space = (r.x - l.x - l.width - leafs.reduce((total, item) => {
+              const space = (r.to.x - l.to.x - l.width - leafs.reduce((total, item) => {
                 return total += item.width
               }, 0)) / (leafs.length + 1)
 
-              leafs.forEach((v) => {
+              for (let k = 0; k < leafs.length; k++) {
+                const v = leafs[k]
                 const nodeL = me.getPrev(v)
-                v.x = nodeL.x + nodeL.width + space
-              })
+                v.to.x = nodeL.to.x + nodeL.width + space
+                v.fillStyle = 'rgba(255,200,0,.5)'
+                await me.animate()
+              }
             }
 
             leafs = []
@@ -234,7 +309,7 @@ class MulTree {
           x4, y4,
         )
       })
-
+      
       gd.strokeStyle = 'rgba(128, 128, 128, 1)'
       gd.stroke()
     }
@@ -244,7 +319,7 @@ class MulTree {
       gd.textAlign = 'center'
       gd.textBaseline = 'middle'
       d.data.forEach((v) => {
-        gd.fillStyle = v.fillStyle || d.conf.fillStyle || 'rgba(0,170,255,.5)'
+        gd.fillStyle = v.fillStyle || d.conf.fillStyle || 'rgba(0, 170, 255, .5)'
         gd.fillRect(v.x + 1, v.y, v.width - 2, d.conf.itemHeight)
 
         gd.fillStyle = '#fff'
@@ -262,7 +337,10 @@ class MulTree {
   }
 }
 
-new MulTree({
+const me = new MulTreeAnimate({
   canvas: document.getElementById('canvas'),
   data: treeData,
 })
+const d = me.d
+const canvas = d.canvas
+const gd = d.gd
