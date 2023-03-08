@@ -1,11 +1,15 @@
-function sleep(time) {
+window.sleep = (time) => {
   return time && new Promise((next) => {
     setTimeout(next, time)
   })
 }
 
-function rand(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min)
+window.rand = (min, max) => {
+  return Math.floor(Math.random() * (max- min + 1) + min)
+}
+
+Array.prototype.getOne = function() {
+  return this[rand(0, this.length - 1)]
 }
 
 Array.prototype.first = function() {
@@ -22,9 +26,18 @@ Array.prototype.swap = function(a, b) {
   this[b] = t
 }
 
-Array.prototype.shuffle = function() {
+Array.prototype.shuffle = function(a, b) {
   for (let i = this.length - 1; i > 0; i--) {
     this.swap(i, Math.floor(Math.random() * (i + 1)))
   }
+
   return this
+}
+
+Array.prototype.min = function() {
+  return Math.min(...this)
+}
+
+Array.prototype.max = function() {
+  return Math.max(...this)
 }

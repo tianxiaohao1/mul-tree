@@ -1,27 +1,143 @@
-// {
-//   const maxDepth = 15
-//   const maxHLen = 15
-//   const stair = []
-//   let count = 0
+{
+  const maxDepth = 9
+  const maxHLen = 20
+  const stair = []
+  let count = 0
 
-//   for (let depth = 0; depth < maxDepth; depth++) {
-//     const upStair = stair[depth - 1]
-//     const arr = stair[depth] = []
-//     let n = Math.pow(2, depth)
+  for (let i = 0; i < maxDepth; i++) {
+    const upStair = stair[i - 1] || []
+    let powLen = Math.pow(2, i)
 
-//     n = n > maxHLen ? maxHLen : n
+    powLen = powLen > maxHLen ? maxHLen : powLen
 
-//     for (let i = 0; i < n; i++) {
-//       arr.push({
-//         id: ++count,
-//         pid: upStair ? upStair[rand(0, upStair.length - 1)].id : 0
-//       })
-//     }
-//   }
+    stair.push(Array(powLen).fill().map((_, idx) => {
+      return {
+        id: ++count,
+        pid: upStair.getOne()?.id || 0
+      }
+    }))
+  }
+  
+  // window.treeData = stair.flat()
+  // console.log(treeData.map((row) => {
+  //   return JSON.stringify(row)
+  // }).join(',\n'))
+}
 
-//   window.treeData = stair.flat()
-// }
-
-// console.log(JSON.stringify(treeData))
-
-treeData = [{"id":1,"pid":0},{"id":2,"pid":1},{"id":3,"pid":1},{"id":4,"pid":2},{"id":5,"pid":2},{"id":6,"pid":3},{"id":7,"pid":3},{"id":8,"pid":6},{"id":9,"pid":4},{"id":10,"pid":6},{"id":11,"pid":4},{"id":12,"pid":7},{"id":13,"pid":7},{"id":14,"pid":5},{"id":15,"pid":5},{"id":16,"pid":14},{"id":17,"pid":10},{"id":18,"pid":12},{"id":19,"pid":8},{"id":20,"pid":8},{"id":21,"pid":10},{"id":22,"pid":15},{"id":23,"pid":8},{"id":24,"pid":13},{"id":25,"pid":8},{"id":26,"pid":11},{"id":27,"pid":13},{"id":28,"pid":12},{"id":29,"pid":9},{"id":30,"pid":8},{"id":31,"pid":30},{"id":32,"pid":30},{"id":33,"pid":19},{"id":34,"pid":26},{"id":35,"pid":25},{"id":36,"pid":22},{"id":37,"pid":29},{"id":38,"pid":26},{"id":39,"pid":22},{"id":40,"pid":29},{"id":41,"pid":22},{"id":42,"pid":23},{"id":43,"pid":17},{"id":44,"pid":16},{"id":45,"pid":20},{"id":46,"pid":40},{"id":47,"pid":32},{"id":48,"pid":45},{"id":49,"pid":38},{"id":50,"pid":36},{"id":51,"pid":33},{"id":52,"pid":34},{"id":53,"pid":41},{"id":54,"pid":39},{"id":55,"pid":45},{"id":56,"pid":44},{"id":57,"pid":33},{"id":58,"pid":45},{"id":59,"pid":34},{"id":60,"pid":35},{"id":61,"pid":50},{"id":62,"pid":60},{"id":63,"pid":46},{"id":64,"pid":54},{"id":65,"pid":46},{"id":66,"pid":52},{"id":67,"pid":59},{"id":68,"pid":46},{"id":69,"pid":46},{"id":70,"pid":49},{"id":71,"pid":49},{"id":72,"pid":57},{"id":73,"pid":46},{"id":74,"pid":51},{"id":75,"pid":50},{"id":76,"pid":69},{"id":77,"pid":73},{"id":78,"pid":65},{"id":79,"pid":72},{"id":80,"pid":75},{"id":81,"pid":74},{"id":82,"pid":70},{"id":83,"pid":65},{"id":84,"pid":69},{"id":85,"pid":71},{"id":86,"pid":62},{"id":87,"pid":65},{"id":88,"pid":67},{"id":89,"pid":64},{"id":90,"pid":72},{"id":91,"pid":79},{"id":92,"pid":79},{"id":93,"pid":84},{"id":94,"pid":81},{"id":95,"pid":79},{"id":96,"pid":89},{"id":97,"pid":89},{"id":98,"pid":78},{"id":99,"pid":86},{"id":100,"pid":90},{"id":101,"pid":86},{"id":102,"pid":76},{"id":103,"pid":77},{"id":104,"pid":86},{"id":105,"pid":85},{"id":106,"pid":101},{"id":107,"pid":94},{"id":108,"pid":104},{"id":109,"pid":99},{"id":110,"pid":105},{"id":111,"pid":99},{"id":112,"pid":105},{"id":113,"pid":102},{"id":114,"pid":98},{"id":115,"pid":96},{"id":116,"pid":100},{"id":117,"pid":96},{"id":118,"pid":91},{"id":119,"pid":101},{"id":120,"pid":92},{"id":121,"pid":112},{"id":122,"pid":111},{"id":123,"pid":113},{"id":124,"pid":116},{"id":125,"pid":119},{"id":126,"pid":107},{"id":127,"pid":120},{"id":128,"pid":113},{"id":129,"pid":112},{"id":130,"pid":107},{"id":131,"pid":110},{"id":132,"pid":116},{"id":133,"pid":108},{"id":134,"pid":110},{"id":135,"pid":107},{"id":136,"pid":134},{"id":137,"pid":130},{"id":138,"pid":131},{"id":139,"pid":134},{"id":140,"pid":126},{"id":141,"pid":122},{"id":142,"pid":126},{"id":143,"pid":123},{"id":144,"pid":131},{"id":145,"pid":126},{"id":146,"pid":122},{"id":147,"pid":126},{"id":148,"pid":123},{"id":149,"pid":123},{"id":150,"pid":134},{"id":151,"pid":138},{"id":152,"pid":150},{"id":153,"pid":147},{"id":154,"pid":149},{"id":155,"pid":139},{"id":156,"pid":142},{"id":157,"pid":144},{"id":158,"pid":143},{"id":159,"pid":137},{"id":160,"pid":142},{"id":161,"pid":149},{"id":162,"pid":149},{"id":163,"pid":144},{"id":164,"pid":149},{"id":165,"pid":143},{"id":166,"pid":157},{"id":167,"pid":160},{"id":168,"pid":151},{"id":169,"pid":159},{"id":170,"pid":156},{"id":171,"pid":165},{"id":172,"pid":151},{"id":173,"pid":165},{"id":174,"pid":157},{"id":175,"pid":156},{"id":176,"pid":151},{"id":177,"pid":162},{"id":178,"pid":159},{"id":179,"pid":164},{"id":180,"pid":163}]
+window.treeData = [
+  {"id":1,"pid":0},
+  {"id":2,"pid":1},
+  {"id":2.1,"pid":1},
+  {"id":2.2,"pid":1},
+  {"id":3,"pid":1},
+  {"id":3.9,"pid":2},
+  {"id":4,"pid":2},
+  {"id":5,"pid":2},
+  {"id":6,"pid":3},
+  {"id":7,"pid":2},
+  {"id":8,"pid":4},
+  {"id":9,"pid":4},
+  {"id":10,"pid":7},
+  {"id":10.1,"pid":7},
+  {"id":11,"pid":7},
+  {"id":12,"pid":6},
+  {"id":13,"pid":6},
+  {"id":14,"pid":7},
+  {"id":15,"pid":5},
+  {"id":16,"pid":13},
+  {"id":17,"pid":15},
+  {"id":18,"pid":15},
+  {"id":19,"pid":9},
+  {"id":20,"pid":11},
+  {"id":21,"pid":13},
+  {"id":22,"pid":12},
+  {"id":23,"pid":11},
+  {"id":24,"pid":13},
+  {"id":25,"pid":13},
+  {"id":26,"pid":14},
+  {"id":27,"pid":12},
+  {"id":28,"pid":15},
+  {"id":29,"pid":15},
+  {"id":30,"pid":8},
+  {"id":31,"pid":11},
+  {"id":32,"pid":24},
+  {"id":33,"pid":18},
+  {"id":34,"pid":25},
+  {"id":35,"pid":17},
+  {"id":36,"pid":27},
+  {"id":37,"pid":20},
+  {"id":38,"pid":23},
+  {"id":39,"pid":16},
+  {"id":40,"pid":30},
+  {"id":41,"pid":26},
+  {"id":42,"pid":19},
+  {"id":43,"pid":27},
+  {"id":44,"pid":18},
+  {"id":45,"pid":23},
+  {"id":46,"pid":18},
+  {"id":47,"pid":23},
+  {"id":48,"pid":31},
+  {"id":49,"pid":29},
+  {"id":50,"pid":28},
+  {"id":51,"pid":29},
+  {"id":52,"pid":38},
+  {"id":53,"pid":39},
+  {"id":54,"pid":42},
+  {"id":55,"pid":34},
+  {"id":56,"pid":40},
+  {"id":57,"pid":46},
+  {"id":58,"pid":33},
+  {"id":59,"pid":37},
+  {"id":60,"pid":35},
+  {"id":61,"pid":45},
+  {"id":62,"pid":41},
+  {"id":63,"pid":41},
+  {"id":64,"pid":36},
+  {"id":65,"pid":33},
+  {"id":66,"pid":42},
+  {"id":67,"pid":38},
+  {"id":68,"pid":47},
+  {"id":69,"pid":43},
+  {"id":70,"pid":46},
+  {"id":71,"pid":48},
+  {"id":72,"pid":53},
+  {"id":73,"pid":59},
+  {"id":74,"pid":66},
+  {"id":75,"pid":55},
+  {"id":76,"pid":52},
+  {"id":77,"pid":60},
+  {"id":78,"pid":69},
+  {"id":79,"pid":65},
+  {"id":80,"pid":53},
+  {"id":81,"pid":62},
+  {"id":82,"pid":62},
+  {"id":83,"pid":64},
+  {"id":84,"pid":67},
+  {"id":85,"pid":71},
+  {"id":86,"pid":62},
+  {"id":87,"pid":53},
+  {"id":88,"pid":63},
+  {"id":89,"pid":62},
+  {"id":90,"pid":71},
+  {"id":91,"pid":71},
+  {"id":92,"pid":74},
+  {"id":93,"pid":91},
+  {"id":94,"pid":78},
+  {"id":95,"pid":80},
+  {"id":96,"pid":87},
+  {"id":97,"pid":88},
+  {"id":98,"pid":80},
+  {"id":99,"pid":81},
+  {"id":100,"pid":81},
+  {"id":101,"pid":76},
+  {"id":102,"pid":75},
+  {"id":103,"pid":91},
+  {"id":104,"pid":87},
+  {"id":105,"pid":80},
+  {"id":106,"pid":75},
+  {"id":107,"pid":88},
+  {"id":108,"pid":90},
+  {"id":109,"pid":81},
+  {"id":110,"pid":86},
+  {"id":111,"pid":85}
+]
